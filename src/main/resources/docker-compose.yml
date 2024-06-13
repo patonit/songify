@@ -1,0 +1,31 @@
+# Jak skonfigurować kontener Dockerowy? / Jak odpalić bazę danych?
+version: "3.8"
+services:
+
+  db:
+    image: postgres
+    container_name: local_pgdb
+    restart: always
+    ports:
+      - "54320:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: postgres
+ #   volumes:
+ #     - local_pgdata:/var/lib/postgresql/data
+  pgadmin:
+    image: dpage/pgadmin4 # Narzędzie pozwalające widzieć stan bazy danych
+    container_name: pgadmin4_container
+    restart: always
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: a@a.pl
+      PGADMIN_DEFAULT_PASSWORD: admin
+ #   volumes:
+ #     - pgadmin-data:/var/lib/pgadmin
+
+#volumes:
+#  local_pgdata:
+#  pgadmin-data:

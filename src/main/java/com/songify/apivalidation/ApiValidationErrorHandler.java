@@ -1,34 +1,29 @@
 package com.songify.apivalidation;
 
-import com.songify.song.controller.SongRestController;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-@ControllerAdvice(assignableTypes = SongRestController.class)
+@ControllerAdvice
 public class ApiValidationErrorHandler {
 
-    @ResponseBody
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ApiValidationErrorResponseDto handleValidationException(MethodArgumentNotValidException exception) {
-        List<String> message = getErrorsFromException(exception);
-        return new ApiValidationErrorResponseDto(message);
+    public ResponseEntity<ApiValidationErrorResponseDto> handleValidationException(MethodArgumentNotValidException exception) {
+        List<String> messages = getErrorsFromException(exception);
+        ApiValidationErrorResponseDto response = new ApiValidationErrorResponseDto(messages, BAD_REQUEST);
+        return ResponseEntity.status(BAD_REQUEST).body(response);
     }
 
-    private  static List<String> getErrorsFromException(MethodArgumentNotValidException exception) {
+    private List<String> getErrorsFromException(MethodArgumentNotValidException exception) {
         return exception.getBindingResult()
                 .getAllErrors()
                 .stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.toList());
-
     }
 }
